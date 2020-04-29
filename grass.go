@@ -1,6 +1,7 @@
 package main
 
 import (
+	"./slack"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -13,27 +14,21 @@ type githubEvent struct{
 }
 
 func main(){
-	req, err := http.NewRequest(http.MethodGet, "https://api.github.com/users/hoashi-akane/events/public", nil)
+
+	body,err := getResponse("https://api.github.com/users/hoashi-akane/events/public")
 	if err != nil{
-		fmt.Print("エラー")
+		fmt.Print("リクエスト・レスポンスエラー")
 	}
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		fmt.Print("エラー")
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
 	var hub []githubEvent
 	err = json.Unmarshal(body, &hub)
 	if err != nil{
 		fmt.Print("エラー")
 	}
 	c := utcToJst(hub)
-	if c == 0{
-		fmt.Print("なし")
-	}else{
-		fmt.Print(c)
+	resp, err := slack.GoSlack(c)
+	if err != nil{fmt.Print("エラー")}
+	if resp.StatusCode == 200{
+
 	}
 }
 // 関数名(引数)(戻り値errも渡せる)
@@ -55,4 +50,19 @@ func utcToJst(hub []githubEvent)(c int) {
 		}
 	}
 	return c
+}
+
+// リクエスト飛ばしてレスポンス受け取る
+func getResponse(url string)(body []byte, err error){
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil{
+	fmt.Print("エラー")
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+	fmt.Print("エラー")
+	}
+	body, err = ioutil.ReadAll(resp.Body)
+	return body, err
 }
