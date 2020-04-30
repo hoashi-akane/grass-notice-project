@@ -1,11 +1,12 @@
 package main
 
 import (
-	"./slack"
 	"encoding/json"
 	"fmt"
+	"github.com/aws/aws-lambda-go/lambda"
 	"io/ioutil"
 	"net/http"
+	"slack"
 	"time"
 )
 
@@ -14,7 +15,10 @@ type githubEvent struct{
 }
 
 func main(){
+	lambda.Start(handler)
+}
 
+func handler(){
 	body,err := getResponse("https://api.github.com/users/hoashi-akane/events/public")
 	if err != nil{
 		fmt.Print("リクエスト・レスポンスエラー")
