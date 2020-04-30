@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 type Slack struct{
@@ -20,7 +21,8 @@ func GoSlack(c int)(resp *http.Response, err error){
  	if c == 0{
  		text = "草はやせ？？？ :gopher:"
 	}else{
-		text = fmt.Sprintf("今日は%d回芝に貢献しました。:kusa:", c)
+		kusa := strings.Repeat(":kusa:", c)
+		text = fmt.Sprintf("今日は%d回芝に貢献しました。"+ kusa, c)
 	}
 	s := Slack{
 		Channel: "",
