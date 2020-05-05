@@ -22,7 +22,9 @@ func GoSlack(c int)(resp *http.Response, err error){
  		text = "草はやせ？？？ :gopher:"
 	}else{
 		kusa := strings.Repeat(":kusa:", c)
-		text = fmt.Sprintf("今日は%d回芝に貢献しました。"+ kusa, c)
+		parrot := strings.Repeat(":parrot:", c)
+		rParrot := strings.Repeat(":r_parrot:",c)
+		text = fmt.Sprintf(parrot+"今日は%d回芝に貢献しました。"+ kusa + rParrot, c)
 	}
 	s := Slack{
 		Channel: "",
