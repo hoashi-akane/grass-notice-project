@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/aws/aws-lambda-go/lambda"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"slack"
 	"time"
@@ -21,16 +22,16 @@ func main(){
 func handler(){
 	body,err := getResponse("https://api.github.com/users/hoashi-akane/events/public")
 	if err != nil{
-		fmt.Print("リクエスト・レスポンスエラー")
+		log.Print("リクエスト・レスポンスエラー")
 	}
 	var hub []githubEvent
 	err = json.Unmarshal(body, &hub)
 	if err != nil{
-		fmt.Print("エラー")
+		log.Print("エラー")
 	}
 	c := utcToJst(hub)
 	resp, err := slack.GoSlack(c)
-	if err != nil{fmt.Print("エラー")}
+	if err != nil{log.Print("エラー")}
 	if resp.StatusCode == 200{
 
 	}
@@ -60,12 +61,12 @@ func utcToJst(hub []githubEvent)(c int) {
 func getResponse(url string)(body []byte, err error){
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil{
-	fmt.Print("エラー")
+	log.Print("エラー")
 	}
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-	fmt.Print("エラー")
+	log.Print("エラー")
 	}
 	body, err = ioutil.ReadAll(resp.Body)
 	return body, err
