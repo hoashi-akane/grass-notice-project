@@ -38,9 +38,8 @@ func handler(){
 }
 // 関数名(引数)(戻り値errも渡せる)
 func utcToJst(hub []githubEvent)(c int) {
-	loc, _ := time.LoadLocation("Asia/Tokyo")
+	time.Local = time.FixedZone("Local", 9*60*60)
 	now := time.Now()
-	now = now.Truncate( time.Hour ).Add( - time.Duration(now.Hour()) * time.Hour )
 	// kは要素番号 vは内容 (key,value)
 	for _, v := range hub {
 		// JSTで作成（まだ表示される時間はUTC)
