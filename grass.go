@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/aws/aws-lambda-go/lambda"
 	"io/ioutil"
 	"log"
@@ -33,19 +32,22 @@ func handler(){
 	resp, err := slack.GoSlack(c)
 	if err != nil{log.Print("エラー")}
 	if resp.StatusCode == 200{
-
+		log.Print("########### Status 200 ############")
+	}else{
+		log.Print("########### Bad Status ############")
 	}
 }
 // 関数名(引数)(戻り値errも渡せる)
 func utcToJst(hub []githubEvent)(c int) {
 	time.Local = time.FixedZone("Local", 9*60*60)
 	now := time.Now()
+	log.Print("#############################################")
 	now = now.Truncate( time.Hour ).Add( - time.Duration(now.Hour()) * time.Hour )
 	// kは要素番号 vは内容 (key,value)
 	for _, v := range hub {
 		// JSTで作成（まだ表示される時間はUTC)
-		t, e := time.ParseInLocation("2006-01-02T15:04:05Z", v.CreatedAt, loc)
-		if e != nil { fmt.Print(e) }
+		t, e := time.ParseInLocation("2006-01-02T15:04:05Z", v.CreatedAt, time.Local)
+		if e != nil { log.Print(e) }
 		// 時間をJSTにする
 		t = t.Add(9 * time.Hour)
 		if t.After(now){
@@ -63,7 +65,6 @@ func getResponse(url string)(body []byte, err error){
 	if err != nil{
 	log.Print("エラー")
 	}
-
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 	log.Print("エラー")
